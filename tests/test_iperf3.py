@@ -6,6 +6,22 @@ from time import sleep
 
 class TestPyPerf:
 
+    def unit_atof_rate_empty(self):
+        with pytest.raises(ValueError):
+            r = iperf3.unit_atof_rate('')
+
+    def unit_atof_rate_bad_suffix(self):
+        with pytest.raises(ValueError):
+            r = iperf3.unit_atof_rate('100Z')
+
+    def unit_atof_rate_num_only(self):
+        r = iperf3.unit_atof_rate('100')
+        assert r == 100
+
+    def unit_atof_rate(self):
+        r = iperf3.unit_atof_rate('10M')
+        assert r == 1000000
+
     def test_unavailable_library(self):
         with pytest.raises(OSError):
             client = iperf3.Client(lib_name='bla')
@@ -74,6 +90,11 @@ class TestPyPerf:
         client = iperf3.Client()
         client.bulksize = 666
         assert client.bulksize == 666
+
+    def test_bandwidth(self):
+        client = iperf3.Client()
+        client.bandwidth = '10M'
+        assert client.bandwidth == 10000000
 
     def test_num_streams(self):
         client = iperf3.Client()
